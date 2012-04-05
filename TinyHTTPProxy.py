@@ -28,8 +28,10 @@ import threading
 from types import FrameType, CodeType
 from time import sleep
 import ftplib
+import re
 
 DEFAULT_LOG_FILENAME = "proxy.log"
+display_headers = 1
 
 class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
     __base = BaseHTTPServer.BaseHTTPRequestHandler
@@ -94,7 +96,9 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
                                                self.request_version))
                     self.headers['Connection'] = 'close'
                     del self.headers['Proxy-Connection']
+                    if display_headers: print 'URL: %s request' % self.path
                     for key_val in self.headers.items():
+                        if display_headers: print '%s: %s\n' % key_val
                         soc.send("%s: %s\r\n" % key_val)
                     soc.send("\r\n")
                     self._read_write(soc)
@@ -135,10 +139,14 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
                     else: out = soc
                     data = i.recv(8192)
                     if data:
-                        if local: local_data += data
+                        if local or display_headers: local_data += data
                         else: out.send(data)
                         count = 0
             if count == max_idling: break
+        if display_headers:
+            end_headers = re.search('(\r\n\r\n)', local_data).span()[0]
+            headers = local_data[:end_headers]
+            print 'URL: %s response\n%s' % (self.path, headers)
         if local: return local_data
         return None
 
