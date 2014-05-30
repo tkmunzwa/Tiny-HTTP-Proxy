@@ -23,4 +23,4 @@ proxy 123.123.123.123
 To start the proxy server bound to port 22222, log to file proxy.log and run the server in the background (as a daemon):
 proxy -p 22222 -l proxy.log -d
 
-(above informations, like the script itself, were taken from http://www.voidtrance.net/2010/01/simple-python-http-proxy/)
+(the above information, like the script itself, were taken from http://www.voidtrance.net/2010/01/simple-python-http-proxy/)
